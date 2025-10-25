@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 env:
-  AZURE_WEBAPP_NAME: your-backend-webapp-name
+  AZURE_WEBAPP_NAME: impl-backend-vp01
   PYTHON_VERSION: '3.11'
 jobs:
   build-and-deploy:
