@@ -1,41 +1,48 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 
 type Service = {
-  service: string
-  status: string
-  version: string
-  last_deploy: string
-}
+  service: string;
+  status: string;
+  version: string;
+  last_deploy: string;
+};
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
+const API = import.meta.env.VITE_API_BASE_URL as string;
 
 export default function App() {
-  const [services, setServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchStatus = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const res = await fetch(`${API_BASE}/status`)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
-      setServices(data)
-    } catch (e:any) {
-      setError(e.message)
+      if (!API) throw new Error('VITE_API_BASE_URL is not defined');
+      const res = await fetch(`${API}/status`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setServices(data);
+    } catch (e: any) {
+      setError(e.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  useEffect(() => { fetchStatus() }, [])
+  useEffect(() => {
+    fetchStatus();
+  }, []);
 
   return (
     <div style={{ fontFamily: 'system-ui', padding: 24, maxWidth: 900, margin: '0 auto' }}>
       <h1 style={{ marginBottom: 8 }}>Deployment Health Dashboard</h1>
-      <p style={{ marginTop: 0, opacity: 0.8 }}>Environment: <code>{API_BASE}</code></p>
-      <button onClick={fetchStatus} style={{ padding: '8px 12px', marginBottom: 16, borderRadius: 8, border: '1px solid #ccc' }}>Refresh</button>
+      <p style={{ marginTop: 0, opacity: 0.8 }}>
+        Environment: <code>{API || '(missing VITE_API_BASE_URL)'}</code>
+      </p>
+      <button onClick={fetchStatus} style={{ padding: '8px 12px', marginBottom: 16, borderRadius: 8, border: '1px solid #ccc' }}>
+        Refresh
+      </button>
       {loading && <div>Loading…</div>}
       {error && <div style={{ color: 'red' }}>Error: {error}</div>}
       {!loading && !error && (
@@ -61,5 +68,5 @@ export default function App() {
         </table>
       )}
     </div>
-  )
+  );
 }
