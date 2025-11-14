@@ -1,17 +1,15 @@
 name: Deploy Backend to Azure Web App
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
     paths:
-      - 'backend/**'
-      - '.github/workflows/backend-deploy.yml'
-
-permissions:
-  contents: read
+      - backend/**
+      - .github/workflows/backend-deploy.yml
 
 env:
   AZURE_WEBAPP_NAME: impl-backend-vp01
-  PYTHON_VERSION: '3.11'
 
 jobs:
   build-and-deploy:
@@ -20,15 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      # NO NEED TO INSTALL PACKAGES LOCALLY.
-      # Azure App Service will run Oryx build automatically.
-
-      - name: Create ZIP package for backend
+      - name: Create ZIP package of backend folder
         run: |
           cd backend
           zip -r ../backend.zip .
