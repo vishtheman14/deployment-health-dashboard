@@ -9,7 +9,7 @@ on:
       - .github/workflows/backend-deploy-dev.yml
 
 env:
-  AZURE_WEBAPP_NAME: impl-backend-dev
+  AZURE_WEBAPP_NAME_DEV: impl-backend-dev
   PYTHON_VERSION: "3.11"
 
 jobs:
@@ -30,17 +30,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -t .
-          ls
+          ls -la
 
-      - name: Create ZIP package
-        working-directory: backend
+      - name: Create ZIP package for backend
         run: |
-          zip -r ../backend.zip .
-          ls -lh ../backend.zip
+          cd backend
+          zip -r backend-dev.zip .
+          mv backend-dev.zip ../backend-dev.zip
+          ls -lh ../backend-dev.zip
 
       - name: Deploy to Azure Web App (DEV)
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME_DEV }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-          package: backend.zip
+          package: backend-dev.zip
