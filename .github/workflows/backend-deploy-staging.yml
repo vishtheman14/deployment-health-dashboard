@@ -1,4 +1,4 @@
-name: Deploy Backend to Azure Web App
+name: Deploy Backend to Azure Web App (STAGING)
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
       - main
     paths:
       - backend/**
-      - .github/workflows/backend-deploy.yml
+      - .github/workflows/backend-deploy-staging.yml
 
 env:
-  AZURE_WEBAPP_NAME: impl-backend-vp01
+  AZURE_WEBAPP_NAME: impl-backend-staging
   PYTHON_VERSION: "3.11"
 
 jobs:
@@ -30,20 +30,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -t .
-          echo "Contents of backend after pip install:"
           ls
-          echo "Check for uvicorn package directory:"
-          ls | grep uvicorn || echo "uvicorn dir not found"
 
-      - name: Create ZIP package for backend
+      - name: Create ZIP package
         working-directory: backend
         run: |
           zip -r ../backend.zip .
           ls -lh ../backend.zip
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App (STAGING)
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_STAGING }}
           package: backend.zip
