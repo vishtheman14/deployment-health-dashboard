@@ -9,7 +9,7 @@ on:
       - .github/workflows/backend-deploy-staging.yml
 
 env:
-  AZURE_WEBAPP_NAME: impl-backend-staging
+  AZURE_WEBAPP_NAME_STAGING: impl-backend-staging
   PYTHON_VERSION: "3.11"
 
 jobs:
@@ -30,17 +30,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -t .
-          ls
+          ls -la
 
-      - name: Create ZIP package
-        working-directory: backend
+      - name: Create ZIP package for backend
         run: |
-          zip -r ../backend.zip .
-          ls -lh ../backend.zip
+          cd backend
+          zip -r backend-staging.zip .
+          mv backend-staging.zip ../backend-staging.zip
+          ls -lh ../backend-staging.zip
 
       - name: Deploy to Azure Web App (STAGING)
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME_STAGING }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_STAGING }}
-          package: backend.zip
+          package: backend-staging.zip
